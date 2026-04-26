@@ -1,0 +1,30 @@
+import streamlit as st
+import random
+
+from data.termos import termos
+from components.ui import card_termo
+
+# carregar CSS
+def load_css():
+    with open("styles/style.css") as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+load_css()
+
+st.title("🧠 MedTerms Pro")
+st.caption("Treinamento médico nível residência")
+
+modo = st.sidebar.radio("Modo", ["Estudo", "Aleatório"])
+
+if modo == "Estudo":
+    nomes = [t["termo"] for t in termos]
+    escolha = st.selectbox("Escolha um termo", nomes)
+
+    for t in termos:
+        if t["termo"] == escolha:
+            card_termo(t)
+
+elif modo == "Aleatório":
+    if st.button("Gerar termo"):
+        t = random.choice(termos)
+        card_termo(t)
