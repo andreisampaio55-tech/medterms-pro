@@ -1,9 +1,39 @@
 import streamlit as st
 import random
 
+# Ícones por área médica
+icones_areas = {
+    "Cardiologia": "❤️",
+    "Neurologia": "🧠",
+    "Gastroenterologia": "🍽️",
+    "Pneumologia": "🫁",
+    "Clínica Médica": "🏥"
+}
+
 st.set_page_config(page_title="MedTerms Pro", layout="centered")
 
-st.title("🧠 MedTerms Pro — Nível Residência")
+# Carregar CSS personalizado
+def load_css():
+    with open("styles/style.css") as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+load_css()
+
+st.markdown(
+    """
+    <div class="hero-container">
+        <h1 class="hero-title">🧠 MedTerms Pro — Nível Residência</h1>
+        <img class="hero-image" src="https://img.icons8.com/fluency/120/000000/medical-doctor.png" alt="MedTerms Pro" />
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+st.markdown("---")
+
+# =========================
+# 📚 BANCO DE TERMOS
+# =========================
 
 # =========================
 # 📚 BANCO DE TERMOS
@@ -120,10 +150,15 @@ if modo == "Estudo":
 
     for t in termos_filtrados:
         if t["termo"] == escolha:
-            st.markdown(f"## 📌 {t['termo']}")
-            st.write(f"**Área:** {t['area']}")
-            st.write(f"**Significado:** {t['significado']}")
-            st.write(f"**Exemplo clínico:** {t['exemplo']}")
+            icone = icones_areas.get(t['area'], "🏥")
+            st.markdown(f"""
+            <div class="card">
+                <h2>{icone} {t['termo']}</h2>
+                <p><strong>Área:</strong> {t['area']}</p>
+                <p><strong>Significado:</strong> {t['significado']}</p>
+                <p><strong>Exemplo clínico:</strong> {t['exemplo']}</p>
+            </div>
+            """, unsafe_allow_html=True)
 
 # =========================
 # 🧪 MODO PROVA
@@ -134,19 +169,43 @@ elif modo == "Prova":
     if "score" not in st.session_state:
         st.session_state.score = 0
 
-    termo = random.choice(termos_filtrados)
+    if "prova_index" not in st.session_state or st.session_state.prova_index >= len(termos_filtrados):
+        st.session_state.prova_index = random.randrange(len(termos_filtrados))
+        st.session_state.resposta_prova = ""
 
-    st.markdown(f"### ❓ O que significa: **{termo['termo']}** ?")
+    if st.button("Novo termo"):
+        st.session_state.prova_index = random.randrange(len(termos_filtrados))
+        st.session_state.resposta_prova = ""
 
-    resposta = st.text_input("Digite sua resposta")
+    termo = termos_filtrados[st.session_state.prova_index]
 
-    if st.button("Responder"):
-        if termo["significado"].lower() in resposta.lower():
+    st.markdown(f"""
+    <div class="card">
+        <h3>❓ O que significa: <strong>{termo['termo']}</strong>?</h3>
+    </div>
+    """, unsafe_allow_html=True)
+
+    if "resposta_prova" not in st.session_state:
+        st.session_state.resposta_prova = ""
+
+    with st.form("prova_form"):
+        resposta = st.text_input("Digite sua resposta", key="resposta_prova")
+        submit = st.form_submit_button("Responder")
+
+    if submit:
+        if termo["significado"].strip().lower() in resposta.strip().lower():
             st.success("✅ Correto!")
             st.session_state.score += 1
         else:
             st.error("❌ Errado")
-            st.write(f"✔ Resposta: {termo['significado']}")
+
+        st.markdown(f"""
+        <div class="card">
+            <h4>📘 Definição de {termo['termo']}</h4>
+            <p><strong>Significado:</strong> {termo['significado']}</p>
+            <p><strong>Exemplo:</strong> {termo['exemplo']}</p>
+        </div>
+        """, unsafe_allow_html=True)
 
     st.write(f"🏆 Pontuação: {st.session_state.score}")
 
@@ -157,7 +216,12 @@ elif modo == "Prova":
 elif modo == "Aleatório":
     if st.button("Gerar termo"):
         t = random.choice(termos_filtrados)
-        st.markdown(f"## 🎲 {t['termo']}")
-        st.write(f"**Área:** {t['area']}")
-        st.write(f"**Significado:** {t['significado']}")
-        st.write(f"**Exemplo:** {t['exemplo']}")
+        icone = icones_areas.get(t['area'], "🏥")
+        st.markdown(f"""
+        <div class="card">
+            <h2>{icone} {t['termo']}</h2>
+            <p><strong>Área:</strong> {t['area']}</p>
+            <p><strong>Significado:</strong> {t['significado']}</p>
+            <p><strong>Exemplo:</strong> {t['exemplo']}</p>
+        </div>
+        """, unsafe_allow_html=True)
