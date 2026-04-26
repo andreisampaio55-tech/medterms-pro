@@ -1,0 +1,33 @@
+/* Fundo geral */
+body {
+    background-color: #f5f9fc;
+}
+
+/* Título */
+h1, h2, h3 {
+    color: #0a3d62;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* Cards */
+.card {
+    background-color: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0px 4px 12px rgba(0,0,0,0.08);
+    margin-bottom: 15px;
+}
+
+/* Botões */
+.stButton > button {
+    background-color: #0a3d62;
+    color: white;
+    border-radius: 10px;
+    padding: 10px;
+    font-weight: bold;
+}
+
+/* Sidebar */
+section[data-testid="stSidebar"] {
+    background-color: #dff6ff;
+}
